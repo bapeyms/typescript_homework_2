@@ -194,3 +194,106 @@ shapes.forEach((shape, index) => {
 let data: string = shapes[1].save();
 shapes[1].load("1, 2, 3, 4");
 shapes[1].show();
+
+// TASK 3
+console.log("TASK 3");
+abstract class Vehicle {
+    protected averageSpeed: number;
+    protected costPerKm: number;
+    protected maxPayload: number;
+    constructor(averageSpeed: number, costPerKm: number, maxPayload: number) {
+        this.averageSpeed = averageSpeed;
+        this.costPerKm = costPerKm;
+        this.maxPayload = maxPayload;
+    }
+
+    abstract calculateTime(distance: number): number;
+    abstract calculateCost(distance: number, weight: number): number;
+}
+
+class Automobile extends Vehicle {
+    private _fuelConsumption: number;
+    private _fuelPrice: number;
+    constructor(averageSpeed: number, costPerKm: number, maxPayload: number,
+        fuelConsumption: number, fuelPrice: number) {
+            super(averageSpeed, costPerKm, maxPayload);
+            this._fuelConsumption = fuelConsumption;
+            this._fuelPrice = fuelPrice;
+        }
+    
+    calculateTime(distance: number): number {
+        let result: number = distance / this.averageSpeed;
+        return result;
+    }
+    calculateCost(distance: number, weight: number): number {
+        if (weight > this.maxPayload) {
+            console.log("Automobile is overloaded! Transportation is impossible!");
+            return Infinity;
+        }
+        let result = (distance / 100) * this._fuelConsumption * this._fuelPrice;
+        return result;
+    }
+}
+
+class Bicycle extends Vehicle {
+    private _riderStamina: number;
+    constructor(averageSpeed: number, costPerKm: number, maxPayload: number,
+        riderStamina: number) {
+            super(averageSpeed, costPerKm, maxPayload);
+            this._riderStamina = riderStamina;
+        }
+    
+    calculateTime(distance: number): number {
+        let pureTime: number = distance / this.averageSpeed;
+        let restStops: number = Math.floor(distance * this._riderStamina);
+        let restTime: number = restStops * 0.5;
+
+        let result: number = pureTime + restTime;
+        return result;
+    }
+    calculateCost(distance: number, weight: number): number {
+        if (weight > this.maxPayload) {
+            console.log("Too heavy for a bicycle!");
+            return Infinity;
+        }
+
+        let baseCost: number = distance * this.costPerKm;
+        let weightFactor: number = weight * 0.5;
+
+        let result: number = baseCost + weightFactor;
+        return result;
+    }
+}
+
+class Cart extends Vehicle {
+    private _horseNumber: number;
+    private _fodderCostPerDay: number;
+    constructor(averageSpeed: number, costPerKm: number, maxPayload: number,
+        horseNumber: number, fodderCostPerDay: number) {
+            super(averageSpeed, costPerKm, maxPayload);
+            this._horseNumber = horseNumber;
+            this._fodderCostPerDay = fodderCostPerDay;
+        }
+    
+    calculateTime(distance: number): number {
+        let travelTime: number = distance / this.averageSpeed;
+        let daysInTrip: number = Math.floor(travelTime / 14);
+
+        let result: number = travelTime + (daysInTrip * 10);
+        return result;
+    }
+    calculateCost(distance: number, weight: number): number {
+        if (weight > this.maxPayload * this._horseNumber) {
+            console.log("The horses will not budge!");
+            return Infinity;
+        }
+
+        let totalHours: number = this.calculateTime(distance);
+        let totalDays: number = Math.ceil(totalHours / 24);
+        let fodderTotal: number = totalDays * this._horseNumber *this._fodderCostPerDay;
+        let maintenance: number = distance * this.costPerKm;
+
+        let result: number = fodderTotal + maintenance;
+        return result;
+    }
+}
